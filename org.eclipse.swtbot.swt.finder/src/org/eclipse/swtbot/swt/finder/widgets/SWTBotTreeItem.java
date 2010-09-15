@@ -430,6 +430,32 @@ public class SWTBotTreeItem extends AbstractSWTBot<TreeItem> {
 		return new Point (bounds.x + (bounds.width / 2), bounds.y + (bounds.height / 2));
 	}
 	
+   /**
+    * Double click on the table at given coordinates
+    * 
+    * @param x the x co-ordinate of the click
+    * @param y the y co-ordinate of the click
+    * @since 2.0
+    */
+   @Override
+	protected void doubleClickXY(int x, int y) {
+	   log.debug(MessageFormat.format("Double-clicking on {0}", this)); //$NON-NLS-1$
+	   notifyTree(SWT.MouseEnter);
+	   notifyTree(SWT.MouseMove);
+	   notifyTree(SWT.Activate);
+	   notifyTree(SWT.FocusIn);
+	   notifyTree(SWT.MouseDown, createMouseEvent(x, y, 1, SWT.BUTTON1, 1));
+	   notifyTree(SWT.MouseUp);
+	   notifyTree(SWT.Selection, createEvent());
+	   notifyTree(SWT.MouseDoubleClick, createMouseEvent(x, y, 1, SWT.BUTTON1, 2));
+	   notifyTree(SWT.MouseHover);
+	   notifyTree(SWT.MouseMove);
+	   notifyTree(SWT.MouseExit);
+	   notifyTree(SWT.Deactivate);
+	   notifyTree(SWT.FocusOut);
+	   log.debug(MessageFormat.format("Double-clicked on {0}", this)); //$NON-NLS-1$
+	}
+
 	/**
 	 * Double clicks on this node.
 	 * 
@@ -452,6 +478,24 @@ public class SWTBotTreeItem extends AbstractSWTBot<TreeItem> {
 		notifyTree(SWT.MouseUp);
 		return this;
 	}
+
+   /**
+    * Double clicks on this node at the given column index.
+    * 
+    * @return the current node.
+    * @since 2.0
+    */
+	public SWTBotTreeItem doubleClick(final int column) {
+	   assertEnabled();
+      Rectangle cellBounds = syncExec(new Result<Rectangle>() {
+         public Rectangle run() {
+            return widget.getBounds(column);
+         }
+      });
+      Point center = getCenter(cellBounds);
+      doubleClickXY(center.x, center.y);
+      return this;
+   }
 
 	/**
 	 * Selects the items matching the array provided.
